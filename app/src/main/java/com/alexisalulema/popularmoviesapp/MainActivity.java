@@ -1,0 +1,102 @@
+package com.alexisalulema.popularmoviesapp;
+
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import com.alexisalulema.popularmoviesapp.model.MovieData;
+import com.alexisalulema.popularmoviesapp.model.MoviesStructure;
+import com.alexisalulema.popularmoviesapp.utilities.NetworkUtils;
+
+import java.net.URL;
+
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.ListItemClickListener, AsyncTaskCompleteListener<String> {
+
+    private MoviesStructure mStructure;
+    private MoviesAdapter mAdapter;
+    private RecyclerView rvMoviesList;
+
+    private int sortingOption;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        rvMoviesList = (RecyclerView) findViewById(R.id.rv_movies);
+
+        GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns());
+        rvMoviesList.setLayoutManager(layoutManager);
+        rvMoviesList.setHasFixedSize(true);
+
+        sortingOption = NetworkUtils.SORT_BY_POPULAR;
+        loadData(sortingOption);
+    }
+
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // You can change this divider to adjust the size of the poster
+        int widthDivider = 350;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) return 2;
+        return nColumns;
+    }
+
+    private void loadData(int option) {
+        URL moviesUrl = NetworkUtils.buildAllMoviesUrl(option);
+        new MoviesLoaderTask(this).execute(moviesUrl);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        CharSequence cs;
+
+        if (sortingOption == NetworkUtils.SORT_BY_POPULAR) {
+            cs = getResources().getString(R.string.sort_by_popular);
+            sortingOption = NetworkUtils.SORT_BY_TOP_RATED;
+        } else {
+            cs = getResources().getString(R.string.sort_by_top_rated);
+            sortingOption = NetworkUtils.SORT_BY_POPULAR;
+        }
+
+        item.setTitle(cs);
+        loadData(sortingOption);
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onListItemClick(int clickedItemIndex) {
+        MovieData movie = mStructure.getResults()[clickedItemIndex];
+        Intent detailsIntent = new Intent(this, DetailsActivity.class);
+        detailsIntent.putExtra("movie", movie);
+
+        startActivity(detailsIntent);
+    }
+
+    @Override
+    public void onTaskComplete(String json) {
+        try {
+            if (json != null && !json.equals("")) {
+                mStructure = MoviesStructure.Parse(json);
+                mAdapter = new MoviesAdapter(mStructure.getResults(), MainActivity.this, MainActivity.this);
+                rvMoviesList.setAdapter(mAdapter);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+}
