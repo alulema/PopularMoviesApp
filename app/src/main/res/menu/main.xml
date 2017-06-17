@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:title="@string/sort_by_top_rated"
-        app:showAsAction="ifRoom"
-        android:orderInCategory="1"
-        android:id="@+id/action_sort"/>
+        android:id="@+id/action_sort_options"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.Spinner"
+        android:title="" />
 </menu>

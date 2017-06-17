@@ -1,13 +1,19 @@
 package com.alexisalulema.popularmoviesapp;
 
 import android.content.Intent;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.alexisalulema.popularmoviesapp.model.MovieData;
 import com.alexisalulema.popularmoviesapp.model.MoviesStructure;
@@ -15,7 +21,7 @@ import com.alexisalulema.popularmoviesapp.utilities.NetworkUtils;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.ListItemClickListener, AsyncTaskCompleteListener<String> {
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.ListItemClickListener, AsyncTaskCompleteListener<String>, AdapterView.OnItemSelectedListener {
 
     private MoviesStructure mStructure;
     private MoviesAdapter mAdapter;
@@ -57,6 +63,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+
+        MenuItem item = menu.findItem(R.id.action_sort_options);
+        Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.sort_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+
         return true;
     }
 
@@ -98,5 +113,24 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        AppCompatTextView tvItem = (AppCompatTextView) view;
+        String cs = tvItem.getText().toString();
+
+        if (cs.equals(getResources().getString(R.string.sort_by_top_rated))) {
+            sortingOption = NetworkUtils.SORT_BY_TOP_RATED;
+        } else if (cs.equals(getResources().getString(R.string.sort_by_popular))) {
+            sortingOption = NetworkUtils.SORT_BY_POPULAR;
+        }
+
+        loadData(sortingOption);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
