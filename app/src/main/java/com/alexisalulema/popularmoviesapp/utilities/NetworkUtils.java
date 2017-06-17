@@ -14,27 +14,39 @@ public class NetworkUtils {
     final public static int SORT_BY_POPULAR = 0;
     final public static int SORT_BY_TOP_RATED = 1;
 
-    final private static String API_KEY = "3429bc6d31c2c7a5fcbd0fa24d130fd9";
+    final private static String API_KEY = "";
     final private static String[] QUERY = {"popular", "top_rated"};
-    final private static String THE_MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie/%s?api_key=%s";
+    final private static String MOVIES_BASE_URL = "https://api.themoviedb.org/3/movie/%s?api_key=%s";
+    final private static String MOVIES_VIDEOS_URL = "https://api.themoviedb.org/3/movie/%s/videos?api_key=%s";
+    final private static String MOVIES_REVIEWS_URL = "https://api.themoviedb.org/3/movie/%s/reviews?api_key=%s";
 
     /**
-     * Builds the URL used to query all popular movies from TheMovieDB.
-     *
+     * Builds the URL used to query all popular or top rated movies from TheMovieDB.
+     * @param option
      * @return The URL to use to query the TheMovieDB.
      */
     public static URL buildAllMoviesUrl(int option) {
-        String urlString = String.format(THE_MOVIE_DB_BASE_URL, QUERY[option], API_KEY);
+        String urlString = String.format(MOVIES_BASE_URL, QUERY[option], API_KEY);
         return buildUrl(urlString);
     }
 
     /**
-     * Builds the URL used to query a specific movie from TheMovieDB.
-     *
+     * Builds the URL used to query all popular or top rated movies from TheMovieDB.
+     * @param videoId
      * @return
      */
-    public static URL buildMovieUrl(int movieId) {
-        String urlString = String.format(THE_MOVIE_DB_BASE_URL, Integer.toString(movieId), API_KEY);
+    public static URL buildGetTrailersUrl(int videoId) {
+        String urlString = String.format(MOVIES_VIDEOS_URL, videoId, API_KEY);
+        return buildUrl(urlString);
+    }
+
+    /**
+     * Builds the URL used to query all popular or top rated movies from TheMovieDB.
+     * @param videoId
+     * @return
+     */
+    public static URL buildGetReviewsUrl(int videoId) {
+        String urlString = String.format(MOVIES_REVIEWS_URL, videoId, API_KEY);
         return buildUrl(urlString);
     }
 

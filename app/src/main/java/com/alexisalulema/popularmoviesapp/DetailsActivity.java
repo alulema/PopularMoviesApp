@@ -7,8 +7,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alexisalulema.popularmoviesapp.model.MovieData;
+import com.alexisalulema.popularmoviesapp.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+import java.net.URL;
 import java.text.DecimalFormat;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -23,6 +25,8 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+        setTitle(R.string.details_title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ivDetailsPoster = (ImageView) findViewById(R.id.iv_details_poster);
         tvDetailsTitle = (TextView) findViewById(R.id.tv_details_title);
@@ -41,6 +45,29 @@ public class DetailsActivity extends AppCompatActivity {
             tvDetailsOverview.setText(movie.overview);
             String imgUrl = "http://image.tmdb.org/t/p/w342" + movie.posterPath;
             Picasso.with(this).load(imgUrl).into(ivDetailsPoster);
+
+            URL trailersUrl = NetworkUtils.buildGetTrailersUrl(movie.id);
+            new MoviesLoaderTask(new AsyncTaskCompleteListener<String>() {
+                @Override
+                public void onTaskComplete(String json) {
+
+                }
+            }).execute(trailersUrl);
+
+            URL reviewsUrl = NetworkUtils.buildGetReviewsUrl(movie.id);
+            new MoviesLoaderTask(new AsyncTaskCompleteListener<String>() {
+                @Override
+                public void onTaskComplete(String json) {
+
+                }
+            }).execute(reviewsUrl);
         }
+
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

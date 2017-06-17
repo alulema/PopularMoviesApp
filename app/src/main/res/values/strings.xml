@@ -4,6 +4,7 @@
     <string name="users_rating">Users Rating:</string>
     <string name="sort_by_popular">Sort Popular</string>
     <string name="sort_by_top_rated">Sort by Top Rated</string>
+    <string name="details_title">Movie Details</string>
     <string-array name="sort_options">
         <item>@string/sort_by_popular</item>
         <item>@string/sort_by_top_rated</item>

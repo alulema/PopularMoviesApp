@@ -8,6 +8,7 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,9 +67,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
         MenuItem item = menu.findItem(R.id.action_sort_options);
         Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
-
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.sort_options, android.R.layout.simple_spinner_item);
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setGravity(Gravity.END);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
