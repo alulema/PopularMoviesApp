@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -204,6 +205,26 @@ public class MovieActivity extends AppCompatActivity {
                     mListVView = (ListView)inflater.inflate(R.layout.fragment_trailers, container, false);
                     mAdapter = new TrailerAdapter(trailers == null ? new MovieTrailer[0] : trailers, getContext());
                     mListVView.setAdapter(mAdapter);
+
+                    mListVView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//// Sets the visibility of the indeterminate progress bar in the
+//                            // title
+//                            setProgressBarIndeterminateVisibility(true);
+//                            // Show progress dialog
+//                            progressDialog = ProgressDialog.show(MainActivity.this,
+//                                    "ProgressDialog", "Loading!");
+//
+//                            // Tells JavaScript to open windows automatically.
+//                            webView.getSettings().setJavaScriptEnabled(true);
+//                            // Sets our custom WebViewClient.
+//                            webView.setWebViewClient(new myWebClient());
+//                            // Loads the given URL
+//                            Item item = (Item) listView.getAdapter().getItem(position);
+//                            webView.loadUrl(item.getUrl());
+                        }
+                    });
                     rootView = mListVView;
 
                     break;
