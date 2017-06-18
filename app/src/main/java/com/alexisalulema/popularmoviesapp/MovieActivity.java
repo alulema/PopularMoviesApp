@@ -1,26 +1,20 @@
 package com.alexisalulema.popularmoviesapp;
 
-import android.app.ActionBar;
 import android.content.Intent;
-import android.support.design.widget.TabLayout;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -59,6 +53,10 @@ public class MovieActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PlaceholderFragment.mAdapter = null;
+        trailers = null;
+
         setContentView(R.layout.activity_movie);
         setTitle(R.string.details_title);
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
@@ -109,7 +107,7 @@ public class MovieActivity extends AppCompatActivity {
 
                             if (PlaceholderFragment.mAdapter != null) {
                                 PlaceholderFragment.mAdapter.trailers = trailers;
-                                PlaceholderFragment.mRecyclerView.setAdapter(PlaceholderFragment.mAdapter);
+                                PlaceholderFragment.mListVView.setAdapter(PlaceholderFragment.mAdapter);
                             }
                         }
                     } catch (Exception ex) {
@@ -153,17 +151,14 @@ public class MovieActivity extends AppCompatActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment implements TrailerAdapter.ListItemClickListener {
+    public static class PlaceholderFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
-        public static RecyclerView mRecyclerView;
+        public static ListView mListVView;
         public static TrailerAdapter mAdapter;
-
-        public PlaceholderFragment() {
-        }
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -175,6 +170,10 @@ public class MovieActivity extends AppCompatActivity {
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
+        }
+
+        public static void loadData(MovieTrailer[] trailers) {
+
         }
 
         @Override
@@ -202,16 +201,10 @@ public class MovieActivity extends AppCompatActivity {
                     Picasso.with(rootView.getContext()).load(imgUrl).into(ivDetailsPoster);
                     break;
                 case 2:
-                    rootView = inflater.inflate(R.layout.fragment_trailers, container, false);
-                    mRecyclerView = (RecyclerView)rootView.findViewById(R.id.rv_trailers);
-                    mRecyclerView.setHasFixedSize(true);
-
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-                    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
-                    mRecyclerView.setLayoutManager(layoutManager);
-                    mAdapter = new TrailerAdapter(new MovieTrailer[0], PlaceholderFragment.this);
-//                    mRecyclerView.setAdapter(mAdapter);
+                    mListVView = (ListView)inflater.inflate(R.layout.fragment_trailers, container, false);
+                    mAdapter = new TrailerAdapter(trailers == null ? new MovieTrailer[0] : trailers, getContext());
+                    mListVView.setAdapter(mAdapter);
+                    rootView = mListVView;
 
                     break;
                 case 3:
@@ -219,14 +212,7 @@ public class MovieActivity extends AppCompatActivity {
                     break;
             }
 
-//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
-        }
-
-        @Override
-        public void onListItemClick(int clickedItemIndex) {
-
         }
     }
 
