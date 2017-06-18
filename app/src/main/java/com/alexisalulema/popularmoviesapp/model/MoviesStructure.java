@@ -41,7 +41,7 @@ public class MoviesStructure {
         this.results = results;
     }
 
-    public static MoviesStructure Parse(String json) {
+    public static MoviesStructure parse(String json) {
         MoviesStructure data = new MoviesStructure();
 
         try {

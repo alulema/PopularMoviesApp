@@ -43,7 +43,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
-        Log.d(TAG, "#" + position);
+        Log.d(TAG, "Movie #" + position);
         holder.bind(position);
     }
 

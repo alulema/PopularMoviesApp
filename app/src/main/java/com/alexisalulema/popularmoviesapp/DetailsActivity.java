@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alexisalulema.popularmoviesapp.model.MovieData;
+import com.alexisalulema.popularmoviesapp.model.MovieReview;
+import com.alexisalulema.popularmoviesapp.model.MovieTrailer;
 import com.alexisalulema.popularmoviesapp.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -50,7 +52,14 @@ public class DetailsActivity extends AppCompatActivity {
             new MoviesLoaderTask(new AsyncTaskCompleteListener<String>() {
                 @Override
                 public void onTaskComplete(String json) {
-
+                    try {
+                        if (json != null && !json.equals("")) {
+                            MovieTrailer[] trailers = MovieTrailer.parse(json, MovieTrailer.TYPE_TRAILER);
+                            System.out.print(trailers);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }).execute(trailersUrl);
 
@@ -58,7 +67,14 @@ public class DetailsActivity extends AppCompatActivity {
             new MoviesLoaderTask(new AsyncTaskCompleteListener<String>() {
                 @Override
                 public void onTaskComplete(String json) {
-
+                    try {
+                        if (json != null && !json.equals("")) {
+                            MovieReview[] reviews = MovieReview.parse(json);
+                            System.out.print(reviews);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }).execute(reviewsUrl);
         }

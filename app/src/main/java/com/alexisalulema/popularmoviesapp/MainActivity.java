@@ -98,9 +98,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     @Override
     public void onListItemClick(int clickedItemIndex) {
         MovieData movie = mStructure.getResults()[clickedItemIndex];
-        Intent detailsIntent = new Intent(this, DetailsActivity.class);
-        detailsIntent.putExtra("movie", movie);
+        Intent detailsIntent = new Intent(this, MovieActivity.class);
 
+        detailsIntent.putExtra("movie", movie);
         startActivity(detailsIntent);
     }
 
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     public void onTaskComplete(String json) {
         try {
             if (json != null && !json.equals("")) {
-                mStructure = MoviesStructure.Parse(json);
+                mStructure = MoviesStructure.parse(json);
                 mAdapter = new MoviesAdapter(mStructure.getResults(), MainActivity.this, MainActivity.this);
                 rvMoviesList.setAdapter(mAdapter);
             }
