@@ -1,6 +1,7 @@
 package com.alexisalulema.popularmoviesapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -126,7 +127,7 @@ public class MovieActivity extends AppCompatActivity {
 
                             if (PlaceholderFragment.rAdapter != null) {
                                 PlaceholderFragment.rAdapter.reviews = reviews;
-                                PlaceholderFragment.mListVView.setAdapter(PlaceholderFragment.rAdapter);
+                                PlaceholderFragment.rListVView.setAdapter(PlaceholderFragment.rAdapter);
                             }
                         }
                     } catch (Exception ex) {
@@ -163,6 +164,7 @@ public class MovieActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         public static ListView mListVView;
+        public static ListView rListVView;
         public static TrailerAdapter mAdapter;
         public static ReviewAdapter rAdapter;
 
@@ -214,30 +216,18 @@ public class MovieActivity extends AppCompatActivity {
                     mListVView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//// Sets the visibility of the indeterminate progress bar in the
-//                            // title
-//                            setProgressBarIndeterminateVisibility(true);
-//                            // Show progress dialog
-//                            progressDialog = ProgressDialog.show(MainActivity.this,
-//                                    "ProgressDialog", "Loading!");
-//
-//                            // Tells JavaScript to open windows automatically.
-//                            webView.getSettings().setJavaScriptEnabled(true);
-//                            // Sets our custom WebViewClient.
-//                            webView.setWebViewClient(new myWebClient());
-//                            // Loads the given URL
-//                            Item item = (Item) listView.getAdapter().getItem(position);
-//                            webView.loadUrl(item.getUrl());
+                            MovieTrailer t = mAdapter.trailers[position];
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://youtu.be/" + t.key)));
                         }
                     });
                     rootView = mListVView;
 
                     break;
                 case 3:
-                    mListVView = (ListView)inflater.inflate(R.layout.fragment_list, container, false);
+                    rListVView = (ListView)inflater.inflate(R.layout.fragment_list, container, false);
                     rAdapter = new ReviewAdapter(reviews == null ? new MovieReview[0] : reviews, getContext());
-                    mListVView.setAdapter(rAdapter);
-                    rootView = mListVView;
+                    rListVView.setAdapter(rAdapter);
+                    rootView = rListVView;
                     break;
             }
 
