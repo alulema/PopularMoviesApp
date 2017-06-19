@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -124,6 +123,11 @@ public class MovieActivity extends AppCompatActivity {
                     try {
                         if (json != null && !json.equals("")) {
                             reviews = MovieReview.parse(json);
+
+                            if (PlaceholderFragment.rAdapter != null) {
+                                PlaceholderFragment.rAdapter.reviews = reviews;
+                                PlaceholderFragment.mListVView.setAdapter(PlaceholderFragment.rAdapter);
+                            }
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -160,6 +164,7 @@ public class MovieActivity extends AppCompatActivity {
         private static final String ARG_SECTION_NUMBER = "section_number";
         public static ListView mListVView;
         public static TrailerAdapter mAdapter;
+        public static ReviewAdapter rAdapter;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -202,7 +207,7 @@ public class MovieActivity extends AppCompatActivity {
                     Picasso.with(rootView.getContext()).load(imgUrl).into(ivDetailsPoster);
                     break;
                 case 2:
-                    mListVView = (ListView)inflater.inflate(R.layout.fragment_trailers, container, false);
+                    mListVView = (ListView)inflater.inflate(R.layout.fragment_list, container, false);
                     mAdapter = new TrailerAdapter(trailers == null ? new MovieTrailer[0] : trailers, getContext());
                     mListVView.setAdapter(mAdapter);
 
@@ -229,7 +234,10 @@ public class MovieActivity extends AppCompatActivity {
 
                     break;
                 case 3:
-                    rootView = new LinearLayout(getContext());
+                    mListVView = (ListView)inflater.inflate(R.layout.fragment_list, container, false);
+                    rAdapter = new ReviewAdapter(reviews == null ? new MovieReview[0] : reviews, getContext());
+                    mListVView.setAdapter(rAdapter);
+                    rootView = mListVView;
                     break;
             }
 
