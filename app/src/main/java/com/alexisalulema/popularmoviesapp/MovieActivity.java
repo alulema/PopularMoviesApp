@@ -133,6 +133,7 @@ public class MovieActivity extends AppCompatActivity {
 
                         contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID, movie.id);
                         contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_TITLE, movie.title);
+                        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_POSTER_PATH, movie.posterPath);
                         // Insert the content values via a ContentResolver
                         Uri uri = getContentResolver().insert(FavoriteContract.FavoriteEntry.CONTENT_URI, contentValues);
 

@@ -13,6 +13,7 @@ public class NetworkUtils {
 
     final public static int SORT_BY_POPULAR = 0;
     final public static int SORT_BY_TOP_RATED = 1;
+    final public static int SORT_BY_FAVORITES = 2;
 
     final private static String API_KEY = "";
     final private static String[] QUERY = {"popular", "top_rated"};
@@ -27,6 +28,11 @@ public class NetworkUtils {
      */
     public static URL buildAllMoviesUrl(int option) {
         String urlString = String.format(MOVIES_BASE_URL, QUERY[option], API_KEY);
+        return buildUrl(urlString);
+    }
+
+    public static URL buildUrlById(int id) {
+        String urlString = String.format(MOVIES_BASE_URL, Integer.toString(id), API_KEY);
         return buildUrl(urlString);
     }
 

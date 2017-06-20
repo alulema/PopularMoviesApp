@@ -2,6 +2,7 @@ package com.alexisalulema.popularmoviesapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,19 +19,23 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.alexisalulema.popularmoviesapp.data.FavoriteContract;
 import com.alexisalulema.popularmoviesapp.model.MovieData;
 import com.alexisalulema.popularmoviesapp.model.MoviesStructure;
 import com.alexisalulema.popularmoviesapp.utilities.NetworkUtils;
 
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.ListItemClickListener,
         AsyncTaskCompleteListener<String>, AdapterView.OnItemSelectedListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private Spinner mSpinner;
     private MoviesStructure mStructure;
     private MoviesAdapter mAdapter;
     private RecyclerView rvMoviesList;
+    ArrayAdapter<CharSequence> adapter;
 
     private int sortingOption;
 
@@ -55,8 +60,14 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     private void setupSharedPreferences() {
         // Get all of the values from shared preferences to set it up
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        mVisualizerView.setShowBass(sharedPreferences.getBoolean(getString(R.string.pref_show_favorites_key),
-//                getResources().getBoolean(R.bool.pref_show_favorites_default)));
+        boolean showFavorites = sharedPreferences.getBoolean(
+                getString(R.string.pref_show_favorites_key),
+                getResources().getBoolean(R.bool.pref_show_favorites_default));
+
+        adapter = ArrayAdapter.createFromResource(
+                this,
+                showFavorites ? R.array.sort_options_extended : R.array.sort_options,
+                android.R.layout.simple_spinner_item);
 
         // Register the listener
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -74,8 +85,34 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     }
 
     private void loadData(int option) {
-        URL moviesUrl = NetworkUtils.buildAllMoviesUrl(option);
-        new MoviesLoaderTask(this).execute(moviesUrl);
+        if (option != NetworkUtils.SORT_BY_FAVORITES) {
+            URL moviesUrl = NetworkUtils.buildAllMoviesUrl(option);
+            new MoviesLoaderTask(this).execute(moviesUrl);
+        } else {
+            Cursor cursor = getContentResolver().query(
+                    FavoriteContract.FavoriteEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null);
+
+            ArrayList<MovieData> movies = new ArrayList<>();
+
+            while (cursor.moveToNext()) {
+                MovieData movie = new MovieData();
+                movie.id = cursor.getInt(1);
+                movie.title = cursor.getString(2);
+                movie.posterPath = cursor.getString(3);
+
+                movies.add(movie);
+            }
+
+            MovieData[] finalMovies = new MovieData[movies.size()];
+            movies.toArray(finalMovies);
+
+            mAdapter = new MoviesAdapter(finalMovies, MainActivity.this, MainActivity.this);
+            rvMoviesList.setAdapter(mAdapter);
+        }
     }
 
     @Override
@@ -84,12 +121,16 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
         MenuItem item = menu.findItem(R.id.action_sort_options);
         Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.sort_options, android.R.layout.simple_spinner_item);
+
+        if (adapter == null)
+            adapter = ArrayAdapter.createFromResource(this, R.array.sort_options, android.R.layout.simple_spinner_item);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setGravity(Gravity.END);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
+
+        mSpinner = spinner;
 
         return true;
     }
@@ -102,14 +143,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
             startActivity(startSettingsActivity);
             return true;
         } else {
-            CharSequence cs;
+            CharSequence cs = null;
 
-            if (sortingOption == NetworkUtils.SORT_BY_POPULAR) {
+            if (sortingOption == NetworkUtils.SORT_BY_POPULAR || sortingOption == NetworkUtils.SORT_BY_FAVORITES) {
                 cs = getResources().getString(R.string.sort_by_popular);
                 sortingOption = NetworkUtils.SORT_BY_TOP_RATED;
-            } else {
+            } else if (sortingOption == NetworkUtils.SORT_BY_TOP_RATED || sortingOption == NetworkUtils.SORT_BY_FAVORITES) {
                 cs = getResources().getString(R.string.sort_by_top_rated);
                 sortingOption = NetworkUtils.SORT_BY_POPULAR;
+            } else if (sortingOption == NetworkUtils.SORT_BY_TOP_RATED || sortingOption == NetworkUtils.SORT_BY_POPULAR) {
+                cs = getResources().getString(R.string.sort_favorites);
+                sortingOption = NetworkUtils.SORT_BY_FAVORITES;
             }
 
             item.setTitle(cs);
@@ -150,6 +194,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
             sortingOption = NetworkUtils.SORT_BY_TOP_RATED;
         } else if (cs.equals(getResources().getString(R.string.sort_by_popular))) {
             sortingOption = NetworkUtils.SORT_BY_POPULAR;
+        } else if (cs.equals(getResources().getString(R.string.sort_favorites))) {
+            sortingOption = NetworkUtils.SORT_BY_FAVORITES;
         }
 
         loadData(sortingOption);
@@ -162,7 +208,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        System.out.print("1");
+        boolean showFavorites = sharedPreferences.getBoolean(
+                getString(R.string.pref_show_favorites_key),
+                getResources().getBoolean(R.bool.pref_show_favorites_default));
+
+        adapter = ArrayAdapter.createFromResource(
+                this,
+                showFavorites ? R.array.sort_options_extended : R.array.sort_options,
+                android.R.layout.simple_spinner_item);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinner.setAdapter(adapter);
     }
 
     @Override
