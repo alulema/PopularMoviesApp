@@ -9,7 +9,7 @@
         <item>@string/sort_by_popular</item>
         <item>@string/sort_by_top_rated</item>
     </string-array>
-    <string name="title_activity_movie">MovieActivity</string>
+    <string name="title_activity_movie">Movie Activity</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="tab_details">Details</string>

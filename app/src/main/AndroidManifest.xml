@@ -23,6 +23,10 @@
             android:name=".MovieActivity"
             android:label="@string/title_activity_movie"
             android:theme="@style/AppTheme.NoActionBar" />
+        <provider
+            android:authorities="com.alexisalulema.popularmoviesapp"
+            android:name=".data.FavoriteContentProvider"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -1,6 +1,8 @@
 package com.alexisalulema.popularmoviesapp;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.alexisalulema.popularmoviesapp.data.FavoriteContract;
 import com.alexisalulema.popularmoviesapp.model.MovieData;
 import com.alexisalulema.popularmoviesapp.model.MovieReview;
 import com.alexisalulema.popularmoviesapp.model.MovieTrailer;
@@ -50,6 +53,8 @@ public class MovieActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private boolean isFavorite;
+    private int favoriteId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +74,7 @@ public class MovieActivity extends AppCompatActivity {
         tb.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new         Intent(getApplicationContext(),MainActivity.class));
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         });
 
@@ -84,19 +89,63 @@ public class MovieActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         Intent startingActivityIntent = getIntent();
 
         if (startingActivityIntent.hasExtra("movie")) {
             movie = startingActivityIntent.getParcelableExtra("movie");
+
+            isFavorite = false;
+            final Cursor cursor = getContentResolver().query(
+                    FavoriteContract.FavoriteEntry.CONTENT_URI,
+                    null,
+                    FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID + " = " + movie.id,
+                    null,
+                    null);
+
+            try {
+                isFavorite = cursor.moveToNext();
+            } finally {
+                cursor.close();
+            }
+
+            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+            if (isFavorite)
+                fab.setImageResource(R.drawable.remove_favorite);
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (isFavorite) {
+                        String stringId = Integer.toString(movie.id);
+                        Uri uri = FavoriteContract.FavoriteEntry.CONTENT_URI;
+                        uri = uri.buildUpon().appendPath(stringId).build();
+
+                        getContentResolver().delete(uri, null, null);
+
+                        isFavorite = false;
+                        fab.setImageResource(R.drawable.add_favorite);
+
+                        Snackbar.make(view, "Removed from Favorites!", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    } else {
+                        ContentValues contentValues = new ContentValues();
+
+                        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID, movie.id);
+                        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_TITLE, movie.title);
+                        // Insert the content values via a ContentResolver
+                        Uri uri = getContentResolver().insert(FavoriteContract.FavoriteEntry.CONTENT_URI, contentValues);
+
+                        if (uri != null) {
+                            isFavorite = true;
+                            fab.setImageResource(R.drawable.remove_favorite);
+
+                            Snackbar.make(view, "Added to Favorites!", Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                        }
+                    }
+                }
+            });
 
             URL trailersUrl = NetworkUtils.buildGetTrailersUrl(movie.id);
             new MoviesLoaderTask(new AsyncTaskCompleteListener<String>() {
@@ -148,7 +197,7 @@ public class MovieActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         //if (id == R.id.action_settings) {
-            return true;
+        return true;
         //}
 
         //return super.onOptionsItemSelected(item);
@@ -180,10 +229,6 @@ public class MovieActivity extends AppCompatActivity {
             return fragment;
         }
 
-        public static void loadData(MovieTrailer[] trailers) {
-
-        }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -209,7 +254,7 @@ public class MovieActivity extends AppCompatActivity {
                     Picasso.with(rootView.getContext()).load(imgUrl).into(ivDetailsPoster);
                     break;
                 case 2:
-                    mListVView = (ListView)inflater.inflate(R.layout.fragment_list, container, false);
+                    mListVView = (ListView) inflater.inflate(R.layout.fragment_list, container, false);
                     mAdapter = new TrailerAdapter(trailers == null ? new MovieTrailer[0] : trailers, getContext());
                     mListVView.setAdapter(mAdapter);
 
@@ -224,7 +269,7 @@ public class MovieActivity extends AppCompatActivity {
 
                     break;
                 case 3:
-                    rListVView = (ListView)inflater.inflate(R.layout.fragment_list, container, false);
+                    rListVView = (ListView) inflater.inflate(R.layout.fragment_list, container, false);
                     rAdapter = new ReviewAdapter(reviews == null ? new MovieReview[0] : reviews, getContext());
                     rListVView.setAdapter(rAdapter);
                     rootView = rListVView;

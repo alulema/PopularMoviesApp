@@ -14,7 +14,7 @@ public class NetworkUtils {
     final public static int SORT_BY_POPULAR = 0;
     final public static int SORT_BY_TOP_RATED = 1;
 
-    final private static String API_KEY = "";
+    final private static String API_KEY = "3429bc6d31c2c7a5fcbd0fa24d130fd9";
     final private static String[] QUERY = {"popular", "top_rated"};
     final private static String MOVIES_BASE_URL = "https://api.themoviedb.org/3/movie/%s?api_key=%s";
     final private static String MOVIES_VIDEOS_URL = "https://api.themoviedb.org/3/movie/%s/videos?api_key=%s";
