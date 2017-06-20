@@ -17,11 +17,11 @@ import java.text.DecimalFormat;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    private ImageView ivDetailsPoster;
-    private TextView tvDetailsTitle;
-    private TextView tvDetailsDate;
-    private TextView tvDetailsRating;
-    private TextView tvDetailsOverview;
+    ImageView ivDetailsPoster;
+    TextView tvDetailsTitle;
+    TextView tvDetailsDate;
+    TextView tvDetailsRating;
+    TextView tvDetailsOverview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,6 @@ public class DetailsActivity extends AppCompatActivity {
                     try {
                         if (json != null && !json.equals("")) {
                             MovieTrailer[] trailers = MovieTrailer.parse(json, MovieTrailer.TYPE_TRAILER);
-                            System.out.print(trailers);
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -70,7 +69,6 @@ public class DetailsActivity extends AppCompatActivity {
                     try {
                         if (json != null && !json.equals("")) {
                             MovieReview[] reviews = MovieReview.parse(json);
-                            System.out.print(reviews);
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();

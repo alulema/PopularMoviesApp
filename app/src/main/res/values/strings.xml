@@ -30,4 +30,6 @@
 
     <string name="pref_show_favorites_label">Show Favorites</string>
     <string name="pref_show_favorites_key" translatable="false">show_favorites</string>
+    <string name="main_poster">Main Poster</string>
+    <string name="play_button_description">Movie Trailer</string>
 </resources>

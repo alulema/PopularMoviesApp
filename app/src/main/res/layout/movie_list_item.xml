@@ -9,6 +9,7 @@
         android:padding="4dp"
         android:scaleType="centerCrop"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/main_poster"/>
 
 </FrameLayout>

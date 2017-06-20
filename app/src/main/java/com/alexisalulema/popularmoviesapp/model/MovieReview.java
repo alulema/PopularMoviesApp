@@ -37,7 +37,7 @@ public class MovieReview implements Parcelable {
         }
     };
 
-    public static final MovieReview[] parse(String json) {
+    public static MovieReview[] parse(String json) {
         try {
             JSONObject root = new JSONObject(json);
             JSONArray jResults = root.getJSONArray("results");

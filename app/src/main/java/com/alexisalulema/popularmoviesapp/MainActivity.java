@@ -107,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
                 movies.add(movie);
             }
 
+            cursor.close();
+
             MovieData[] finalMovies = new MovieData[movies.size()];
             movies.toArray(finalMovies);
 

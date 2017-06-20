@@ -1,5 +1,5 @@
 package com.alexisalulema.popularmoviesapp;
 
-public interface AsyncTaskCompleteListener<T> {
+interface AsyncTaskCompleteListener<T> {
     void onTaskComplete(T json);
 }

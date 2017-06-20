@@ -48,7 +48,7 @@ public class MovieTrailer implements Parcelable {
         }
     };
 
-    public static final MovieTrailer[] parse(String json, String filterBy) {
+    public static MovieTrailer[] parse(String json, String filterBy) {
         try {
             JSONObject root = new JSONObject(json);
             JSONArray jResults = root.getJSONArray("results");

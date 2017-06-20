@@ -47,14 +47,13 @@ public class MovieActivity extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    ViewPager mViewPager;
     private boolean isFavorite;
-    private int favoriteId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
