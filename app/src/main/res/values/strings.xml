@@ -11,8 +11,14 @@
     </string-array>
     <string name="title_activity_movie">Movie Activity</string>
     <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="tab_details">Details</string>
     <string name="tab_trailers">Trailers</string>
     <string name="tab_reviews">Reviews</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="pref_show_true">Shown</string>
+    <string name="pref_show_false">Hidden</string>
+
+    <string name="pref_show_favorites_label">Show Favorites</string>
+    <string name="pref_show_favorites_key" translatable="false">show_favorites</string>
 </resources>

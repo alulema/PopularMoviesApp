@@ -1,9 +1,11 @@
 package com.alexisalulema.popularmoviesapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +24,9 @@ import com.alexisalulema.popularmoviesapp.utilities.NetworkUtils;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.ListItemClickListener, AsyncTaskCompleteListener<String>, AdapterView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.ListItemClickListener,
+        AsyncTaskCompleteListener<String>, AdapterView.OnItemSelectedListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private MoviesStructure mStructure;
     private MoviesAdapter mAdapter;
@@ -43,6 +47,19 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
         sortingOption = NetworkUtils.SORT_BY_POPULAR;
         loadData(sortingOption);
+
+        setupSharedPreferences();
+    }
+
+
+    private void setupSharedPreferences() {
+        // Get all of the values from shared preferences to set it up
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        mVisualizerView.setShowBass(sharedPreferences.getBoolean(getString(R.string.pref_show_favorites_key),
+//                getResources().getBoolean(R.bool.pref_show_favorites_default)));
+
+        // Register the listener
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     private int numberOfColumns() {
@@ -79,18 +96,25 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        CharSequence cs;
 
-        if (sortingOption == NetworkUtils.SORT_BY_POPULAR) {
-            cs = getResources().getString(R.string.sort_by_popular);
-            sortingOption = NetworkUtils.SORT_BY_TOP_RATED;
+        if (item.getItemId() == R.id.action_settings) {
+            Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+            startActivity(startSettingsActivity);
+            return true;
         } else {
-            cs = getResources().getString(R.string.sort_by_top_rated);
-            sortingOption = NetworkUtils.SORT_BY_POPULAR;
-        }
+            CharSequence cs;
 
-        item.setTitle(cs);
-        loadData(sortingOption);
+            if (sortingOption == NetworkUtils.SORT_BY_POPULAR) {
+                cs = getResources().getString(R.string.sort_by_popular);
+                sortingOption = NetworkUtils.SORT_BY_TOP_RATED;
+            } else {
+                cs = getResources().getString(R.string.sort_by_top_rated);
+                sortingOption = NetworkUtils.SORT_BY_POPULAR;
+            }
+
+            item.setTitle(cs);
+            loadData(sortingOption);
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -134,5 +158,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        System.out.print("1");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 }
